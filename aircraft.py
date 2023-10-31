@@ -20,6 +20,11 @@ class Aircraft():
         # Store a decimal value for the aircraft's center.
         self.center = float(self.rect.centerx)
         
+        # bullet
+        self.bullet_speed_factor = ai_settings.bullet_speed_factor
+        self.bullet_allowed = ai_settings.bullet_allowed
+        self.bullet_color = ai_settings.bullet_color
+
         # Movement flag
         self.moving_right = False
         self.moving_left = False

@@ -35,6 +35,7 @@ def run_game():
     # Make a group to store bullets in.
     bullets = Group()
     aliens = Group()
+    alien_bullets = Group()
     # Make an alien.
     # alien = Alien(ai_settings, screen)
 
@@ -52,9 +53,11 @@ def run_game():
             gf.update_bullets(ai_settings, screen, stats,
                               sb, aircraft, aliens, bullets)
             gf.update_aliens(ai_settings, stats, screen,
-                             aircraft, aliens, bullets)
+                             aircraft, aliens, bullets, alien_bullets)
+            gf.update_alien_bullets(ai_settings, screen, stats, 
+                                    aircraft, aliens, alien_bullets)
         gf.update_screen(ai_settings, screen, stats, sb, aircraft,
-                         aliens, bullets, play_button)
+                         aliens, bullets, alien_bullets, play_button)
 
 
 run_game()
