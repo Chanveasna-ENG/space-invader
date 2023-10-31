@@ -5,9 +5,7 @@ from bullet import Bullet
 from alien import Alien
 from time import sleep
 from pygame import mixer
-
-# Initialize game and create a screen object.
-pygame.init()
+import random
 
 
 def check_events(ai_settings, screen, stats, sb, play_button, aircraft, aliens, bullets):
@@ -23,13 +21,29 @@ def check_events(ai_settings, screen, stats, sb, play_button, aircraft, aliens, 
             check_keydown_events(event, ai_settings, screen, aircraft, bullets)
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, aircraft)
-    # fire_bullet(ai_settings, screen, aircraft, bullets)
+    fire_bullet(ai_settings, screen, aircraft, bullets)
 
+# Load the background image
+bg_image = pygame.image.load('images/background.bmp')
+# bg_image2 = pygame.image.load('images/background.bmp')
+bg_y = 0
+# bg_y2 = -600
 
-def update_screen(ai_settings, screen, stats, sb, aircraft, aliens, bullets, play_button):
+def update_screen(ai_settings, screen, stats, sb, aircraft, aliens, bullets, alien_bullets, play_button):
     """Update images on the screen and flip to the new screen."""
-    # Redraw the screen during each pass through the loop.
-    screen.fill(ai_settings.bg_color)
+    screen_height = screen.get_height()
+    # Set initial positions
+    global bg_y
+    # Move the image down
+    bg_y += 1
+    image_height = bg_image.get_height()
+    # Reset position if image has moved off screen
+    if bg_y >= image_height:
+        bg_y = 0
+
+    # Draw the image
+    screen.blit(bg_image, (0, bg_y))
+    screen.blit(bg_image, (0, bg_y - image_height))
 
     sb.show_score()
     # Draw the play button if the game is inactive.
@@ -38,11 +52,54 @@ def update_screen(ai_settings, screen, stats, sb, aircraft, aliens, bullets, pla
     # Draw all bullets to the screen
     for bullet in bullets.sprites():
         bullet.draw_bullet()
-
+    for alien_bullet in alien_bullets.sprites():
+        alien_bullet.draw_bullet()
     aircraft.blitme()
     aliens.draw(screen)
     # Make the most recently drawn screen visible.
     pygame.display.flip()
+# def update_screen(ai_settings, screen, stats, sb, aircraft, aliens, bullets, alien_bullets, play_button):
+#     """Update images on the screen and flip to the new screen."""
+#     # Redraw the screen during each pass through the loop.
+#     # screen.fill(ai_settings.bg_color)
+#     # Load the background image
+#     bg_image = pygame.image.load('images/background.bmp')
+#     # Set initial positions
+#     bg_y1 = 0
+#     bg_y2 = -screen.get_height()
+
+#     moving_background(screen, bg_image, bg_y1, bg_y2)
+#     sb.show_score()
+#     # Draw the play button if the game is inactive.
+#     if not stats.game_active:
+#         play_button.draw_button()
+#     # Draw all bullets to the screen
+#     for bullet in bullets.sprites():
+#         bullet.draw_bullet()
+#     for alien_bullet in alien_bullets.sprites():
+#         alien_bullet.draw_bullet()
+#     aircraft.blitme()
+#     aliens.draw(screen)
+#     # Make the most recently drawn screen visible.
+#     pygame.display.flip()
+
+# def moving_background(screen, bg_image, bg_y1, bg_y2):
+#     """Move the background image."""
+#     # screen_width = screen.get_width()
+#     screen_height = screen.get_height()
+#     # Move the images down
+#     bg_y1 += 1
+#     bg_y2 += 1
+
+#     # Reset positions if image has moved off screen
+#     if bg_y1 >= screen_height:
+#         bg_y1 = -screen_height
+#     if bg_y2 >= screen_height:
+#         bg_y2 = -screen_height
+
+#     # Draw the images
+#     screen.blit(bg_image, (0, bg_y1))
+#     screen.blit(bg_image, (0, bg_y2))
 
 
 def check_play_button(ai_settings, screen, stats, sb, play_button, aircraft, aliens, bullets, mouse_x, mouse_y):
@@ -113,12 +170,27 @@ def update_bullets(ai_settings, screen, stats, sb, aircraft, aliens, bullets):
         bullets.empty()
         create_alien_army(ai_settings, screen, aircraft, aliens)
 
+def update_alien_bullets(ai_settings, screen, stats, aircraft, aliens, bullets):
+    """Update position of bullets and get rid of old bullets."""
+    # Update bullet positions.
+    bullets.update()
 
-def fire_bullet(ai_settings, screen, aircraft, bullets):
+    # Get rid of bullets that have disappeared.
+    for bullet in bullets.copy():
+        if bullet.rect.bottom >= ai_settings.screen_height:
+            bullets.remove(bullet)
+    # Check for any bullets that have hit aliens.
+    # If so, get rid of the bullet and the alien.
+    # collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+    check_bullet_aircraft_collisions(
+        ai_settings, screen, stats, aircraft, aliens, bullets)
+
+
+def fire_bullet(ai_settings, screen, aircraft, bullets, direction=1):
     """Fire a bullet if limit not reached yet."""
     # Create a new bullet and add it to the bullets group.
-    if len(bullets) < ai_settings.bullet_allowed:
-        new_bullet = Bullet(ai_settings, screen, aircraft)
+    if len(bullets) < aircraft.bullet_allowed:
+        new_bullet = Bullet(ai_settings, screen, aircraft, direction=direction)
         bullets.add(new_bullet)
         # sound back ground
         mixer.music.load('sounds/shoot.wav')
@@ -168,25 +240,51 @@ def check_army_edge(ai_settings, aliens):
     """Respond appropriately if any aliens have reached an edge."""
     for alien in aliens.sprites():
         if alien.check_edges():
-            change_army_direction(ai_settings, aliens)
-            break
+            # change_army_direction(ai_settings, aliens)
+            alien.rect.y += ai_settings.fleet_drop_speed
+            alien.fleet_direction *= -1
+            alien.alien_changing_direction_cooldown = ai_settings.alien_changing_direction_cooldown
+        alien.update()
+        randomly_change_direction(ai_settings, aliens)
+            # break
+
+def randomly_fire_bullet(ai_settings, screen, aliens, bullets):
+    """Randomly fire bullets."""
+    if len(aliens) > 0:
+        random_alien = aliens.sprites()[random.randint(0, len(aliens) - 1)]
+        if random_alien.rect.y > 0:
+            fire_bullet(ai_settings, screen, random_alien, bullets, direction=-1)
+
+def randomly_change_direction(ai_settings, aliens):
+    """Randomly change direction."""
+    random_number = random.randint(0, 10)
+    if random_number == 6:
+        if len(aliens) > 0:
+            random_alien = aliens.sprites()[random.randint(0, len(aliens) - 1)]
+            if random_alien.rect.y > 0 and random_alien.alien_changing_direction_cooldown == 0:
+                random_alien.fleet_direction *= -1
+                random_alien.alien_changing_direction_cooldown = ai_settings.alien_changing_direction_cooldown
 
 
-def change_army_direction(ai_settings, aliens):
-    """Drop the entire fleet and change the fleet's direction."""
-    for alien in aliens.sprites():
-        alien.rect.y += ai_settings.fleet_drop_speed
-    ai_settings.fleet_direction *= -1
+# def change_alien_direction(ai_settings, aliens):
+#     """Drop the entire fleet and change the fleet's direction."""
+    
+
+# def change_army_direction(ai_settings, aliens):
+#     """Drop the entire fleet and change the fleet's direction."""
+#     for alien in aliens.sprites():
+#         alien.rect.y += ai_settings.fleet_drop_speed
+#     ai_settings.fleet_direction *= -1
 
 
-def update_aliens(ai_settings, stats, screen, aircraft, aliens, bullets):
+def update_aliens(ai_settings, stats, screen, aircraft, aliens, bullets, alien_bullets):
     """
     Check if the fleet is at an edge,
         and then update the positions of all aliens in the fleet.
     """
     check_army_edge(ai_settings, aliens)
-    aliens.update()
-
+    # aliens.update()
+    randomly_fire_bullet(ai_settings, screen, aliens, alien_bullets)
     check_aliens_bottom(ai_settings, stats, screen, aircraft, aliens, bullets)
     # for alien in aliens.copy():
     #     if alien.rect.bottom >= ai_settings.screen_height:
@@ -236,11 +334,18 @@ def check_bullet_alien_collisions(ai_settings, screen, stats, sb, aircraft, alie
             stats.score += ai_settings.alien_points * len(aliens)
             sb.prep_score()
         check_high_score(stats, sb)
+    
     if len(aliens) == 0:
         # Destroy existing bullets and create new fleet.
         bullets.empty()
         ai_settings.increase_speed()
         create_alien_army(ai_settings, screen, aircraft, aliens)
+
+def check_bullet_aircraft_collisions(ai_settings, screen, stats, aircraft, aliens, bullets):
+    """Respond to bullet-aircraft collisions."""
+    # Remove any bullets and aliens that have collided.
+    if pygame.sprite.spritecollideany(aircraft, bullets):
+        aircraft_hit(ai_settings, stats, screen, aircraft, aliens, bullets)
 
 
 def check_high_score(stats, sb):
