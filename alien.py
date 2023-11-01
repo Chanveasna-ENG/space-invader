@@ -1,8 +1,7 @@
-from tabnanny import check
 import pygame
 from pygame.sprite import Sprite
 # from bullet import Bullet
-
+import random
 
 class Alien(Sprite):
     """A class to represent a single alien in the fleet."""
@@ -27,7 +26,8 @@ class Alien(Sprite):
         self.bullet_speed_factor = ai_settings.alien_bullet_speed_factor
         self.bullet_color = ai_settings.alien_bullet_color
         self.bullet_allowed = ai_settings.alien_bullet_allowed
-        self.alien_changing_direction_cooldown = ai_settings.alien_changing_direction_cooldown
+        a, b = ai_settings.alien_changing_direction_cooldown_range
+        self.alien_changing_direction_cooldown = random.randint(a, b)
 
 
     def blitme(self):
