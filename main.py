@@ -58,6 +58,7 @@ def run_game():
                                     aircraft, aliens, alien_bullets)
         gf.update_screen(ai_settings, screen, stats, sb, aircraft,
                          aliens, bullets, alien_bullets, play_button)
+        
 
 
 run_game()

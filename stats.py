@@ -14,6 +14,6 @@ class GameStats():
 
     def reset_stats(self):
         """Initialize statistics that can change during the game."""
-        self.aircraft_left = self.ai_settings.aircraft_limit
+        self.ai_settings.aircraft_left = self.ai_settings.aircraft_limit
         self.score = 0
         

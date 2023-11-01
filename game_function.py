@@ -46,6 +46,10 @@ def update_screen(ai_settings, screen, stats, sb, aircraft, aliens, bullets, ali
     screen.blit(bg_image, (0, bg_y - image_height))
 
     sb.show_score()
+    pygame.draw.rect(screen, (255, 0, 0), (aircraft.rect.x, (aircraft.rect.bottom + 10), aircraft.rect.width, 15))
+    if ai_settings.aircraft_left > 0:
+        pygame.draw.rect(screen, (0, 255, 0), (aircraft.rect.x, (aircraft.rect.bottom + 10), int(aircraft.rect.width * (ai_settings.aircraft_left / ai_settings.aircraft_limit)), 15))
+        
     # Draw the play button if the game is inactive.
     if not stats.game_active:
         play_button.draw_button()
@@ -300,13 +304,13 @@ def aircraft_hit(ai_settings, stats, screen, aircraft, aliens, bullets):
         # Decrement ships_left.
         ai_settings.aircraft_left -= 1
         # Empty the list of aliens and bullets.
-        aliens.empty()
-        bullets.empty()
+        # aliens.empty()
+        # bullets.empty()
         # Create a new fleet and center the aircraft.
-        create_alien_army(ai_settings, aircraft.screen, aircraft, aliens)
-        aircraft.center_aircraft()
+        # create_alien_army(ai_settings, aircraft.screen, aircraft, aliens)
+        # aircraft.center_aircraft()
         # Pause.
-        sleep(0.5)
+        # sleep(0.5)
     else:
         stats.game_active = False
         pygame.mouse.set_visible(True)
@@ -346,6 +350,7 @@ def check_bullet_aircraft_collisions(ai_settings, screen, stats, aircraft, alien
     # Remove any bullets and aliens that have collided.
     if pygame.sprite.spritecollideany(aircraft, bullets):
         aircraft_hit(ai_settings, stats, screen, aircraft, aliens, bullets)
+        bullets.empty()
 
 
 def check_high_score(stats, sb):

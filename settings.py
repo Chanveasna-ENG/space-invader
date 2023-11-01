@@ -12,7 +12,7 @@ class Settings:
 
         # Aircraft settings
         self.aircraft_speed_factor = 1
-        self.aircraft_limit = 1
+        self.aircraft_limit = 5
         self.aircraft_left = self.aircraft_limit
 
         # Bullet settings

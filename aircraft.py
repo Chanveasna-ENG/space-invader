@@ -31,6 +31,7 @@ class Aircraft():
         self.moving_up = False
         self.moving_down = False
         
+        
     def update(self):
         """Update the aircraft's position based on the movement flag."""
         # Update the aircraft's center value, not the rect.
@@ -46,6 +47,7 @@ class Aircraft():
         # Update rect object from self.center.
         self.rect.centerx = self.center
         
+
     def blitme(self):
         """Draw the aircraft at its current location."""
         self.screen.blit(self.image, self.rect)
