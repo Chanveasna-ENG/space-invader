@@ -31,19 +31,8 @@ bg_y = 0
 
 def update_screen(ai_settings, screen, stats, sb, aircraft, aliens, bullets, alien_bullets, play_button):
     """Update images on the screen and flip to the new screen."""
-    screen_height = screen.get_height()
-    # Set initial positions
-    global bg_y
-    # Move the image down
-    bg_y += 1
-    image_height = bg_image.get_height()
-    # Reset position if image has moved off screen
-    if bg_y >= image_height:
-        bg_y = 0
-
-    # Draw the image
-    screen.blit(bg_image, (0, bg_y))
-    screen.blit(bg_image, (0, bg_y - image_height))
+    
+    screen.fill(ai_settings.bg_color)
 
     sb.show_score()
     # Draw the play button if the game is inactive.
@@ -243,7 +232,7 @@ def check_army_edge(ai_settings, aliens):
             # change_army_direction(ai_settings, aliens)
             alien.rect.y += ai_settings.fleet_drop_speed
             alien.fleet_direction *= -1
-            alien.alien_changing_direction_cooldown = ai_settings.alien_changing_direction_cooldown
+            alien.alien_changing_direction_cooldown = random.randint(ai_settings.alien_changing_direction_cooldown_range[0], ai_settings.alien_changing_direction_cooldown_range[1])
         alien.update()
         randomly_change_direction(ai_settings, aliens)
             # break
@@ -263,7 +252,7 @@ def randomly_change_direction(ai_settings, aliens):
             random_alien = aliens.sprites()[random.randint(0, len(aliens) - 1)]
             if random_alien.rect.y > 0 and random_alien.alien_changing_direction_cooldown == 0:
                 random_alien.fleet_direction *= -1
-                random_alien.alien_changing_direction_cooldown = ai_settings.alien_changing_direction_cooldown
+                random_alien.alien_changing_direction_cooldown = random_alien.alien_changing_direction_cooldown = random.randint(ai_settings.alien_changing_direction_cooldown_range[0], ai_settings.alien_changing_direction_cooldown_range[1])
 
 
 # def change_alien_direction(ai_settings, aliens):
@@ -320,9 +309,12 @@ def check_aliens_bottom(ai_settings, stats, screen, aircraft, aliens, bullets):
     screen_rect = screen.get_rect()
     for alien in aliens.sprites():
         if alien.rect.bottom >= screen_rect.bottom:
+            # remove that alien
+            aliens.remove(alien)
+
             # Treat this the same as if the aircraft got hit.
-            aircraft_hit(ai_settings, stats, screen, aircraft, aliens, bullets)
-            break
+            # aircraft_hit(ai_settings, stats, screen, aircraft, aliens, bullets)
+            # break
 
 
 def check_bullet_alien_collisions(ai_settings, screen, stats, sb, aircraft, aliens, bullets):
