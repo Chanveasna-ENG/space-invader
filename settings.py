@@ -8,7 +8,8 @@ class Settings:
         # Screen settings
         self.screen_width = 1000
         self.screen_height = 600
-        self.bg_color = (230, 230, 230)
+        # self.bg_color = (230, 230, 230)
+        self.bg_color = (0, 0, 0)
 
         # Aircraft settings
         self.aircraft_speed_factor = 1
@@ -19,7 +20,7 @@ class Settings:
         self.bullet_width = 5
         self.bullet_height = 15
         self.bullet_speed_factor = 1
-        self.bullet_color = 60, 60, 60
+        self.bullet_color = 250, 208, 0
         self.bullet_allowed = 1
 
         # Alien settings
@@ -27,7 +28,7 @@ class Settings:
         self.fleet_drop_speed = 30
         # fleet_direction of 1 represents right; -1 represents left.
         self.fleet_direction = 1
-        self.alien_changing_direction_cooldown = 600
+        self.alien_changing_direction_cooldown_range = (100, 1000)
         self.alien_bullet_allowed = self.bullet_allowed * 8
         self.alien_bullet_speed_factor = self.bullet_speed_factor - 0.5
         self.alien_bullet_color = 255, 60, 60
