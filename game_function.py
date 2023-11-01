@@ -21,7 +21,7 @@ def check_events(ai_settings, screen, stats, sb, play_button, aircraft, aliens, 
             check_keydown_events(event, ai_settings, screen, aircraft, bullets)
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, aircraft)
-    fire_bullet(ai_settings, screen, aircraft, bullets)
+    # fire_bullet(ai_settings, screen, aircraft, bullets)
 
 # Load the background image
 bg_image = pygame.image.load('images/background.bmp')
@@ -145,7 +145,7 @@ def check_keyup_events(event, aircraft):
         aircraft.moving_down = False
 
 
-def update_bullets(ai_settings, screen, stats, sb, aircraft, aliens, bullets):
+def update_bullets(ai_settings, screen, stats, sb, aircraft, aliens, bullets, alien_bullets):
     """Update position of bullets and get rid of old bullets."""
     # Update bullet positions.
     bullets.update()
@@ -159,6 +159,8 @@ def update_bullets(ai_settings, screen, stats, sb, aircraft, aliens, bullets):
     # collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
     check_bullet_alien_collisions(
         ai_settings, screen, stats, sb, aircraft, aliens, bullets)
+    check_bullet_alien_bullet_collisions(
+        ai_settings, screen, stats, sb, aircraft, aliens, bullets, alien_bullets)
     if len(aliens) == 0:
         bullets.empty()
         create_alien_army(ai_settings, screen, aircraft, aliens)
@@ -337,6 +339,10 @@ def check_bullet_alien_collisions(ai_settings, screen, stats, sb, aircraft, alie
         bullets.empty()
         ai_settings.increase_speed()
         create_alien_army(ai_settings, screen, aircraft, aliens)
+
+def check_bullet_alien_bullet_collisions(ai_settings, screen, stats, sb, aircraft, aliens, bullets, alien_bullets):
+    collisions = pygame.sprite.groupcollide(bullets, alien_bullets, True, True)
+    
 
 def check_bullet_aircraft_collisions(ai_settings, screen, stats, aircraft, aliens, bullets):
     """Respond to bullet-aircraft collisions."""

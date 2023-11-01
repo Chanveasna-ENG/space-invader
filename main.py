@@ -51,7 +51,7 @@ def run_game():
         if stats.game_active:
             aircraft.update()
             gf.update_bullets(ai_settings, screen, stats,
-                              sb, aircraft, aliens, bullets)
+                              sb, aircraft, aliens, bullets, alien_bullets)
             gf.update_aliens(ai_settings, stats, screen,
                              aircraft, aliens, bullets, alien_bullets)
             gf.update_alien_bullets(ai_settings, screen, stats, 

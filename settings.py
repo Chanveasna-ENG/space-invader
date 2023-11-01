@@ -18,10 +18,10 @@ class Settings:
 
         # Bullet settings
         self.bullet_width = 5
-        self.bullet_height = 15
+        self.bullet_height = 20
         self.bullet_speed_factor = 1
         self.bullet_color = 250, 208, 0
-        self.bullet_allowed = 1
+        self.bullet_allowed = 3
 
         # Alien settings
         self.alien_speed_factor = 0.5
@@ -29,7 +29,7 @@ class Settings:
         # fleet_direction of 1 represents right; -1 represents left.
         self.fleet_direction = 1
         self.alien_changing_direction_cooldown_range = (100, 1000)
-        self.alien_bullet_allowed = self.bullet_allowed * 8
+        self.alien_bullet_allowed = self.bullet_allowed * 4
         self.alien_bullet_speed_factor = self.bullet_speed_factor - 0.5
         self.alien_bullet_color = 255, 60, 60
 
