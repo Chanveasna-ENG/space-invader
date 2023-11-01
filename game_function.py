@@ -37,7 +37,7 @@ def update_screen(ai_settings, screen, stats, sb, aircraft, aliens, bullets, ali
     sb.show_score()
     pygame.draw.rect(screen, (255, 0, 0), (aircraft.rect.x, (aircraft.rect.bottom + 10), aircraft.rect.width, 15))
     if ai_settings.aircraft_left > 0:
-        pygame.draw.rect(screen, (0, 255, 0), (aircraft.rect.x, (aircraft.rect.bottom + 10), int(aircraft.rect.width * (ai_settings.aircraft_left / ai_settings.aircraft_limit)), 15))
+        pygame.draw.rect(screen, (0, 255, 0), (aircraft.rect.x, (aircraft.rect.bottom + 10), int(aircraft.rect.width * (ai_settings.aircraft_left / ai_settings.aircraft_limit)) + 1, 15))
         
     # Draw the play button if the game is inactive.
     if not stats.game_active:
@@ -289,7 +289,7 @@ def update_aliens(ai_settings, stats, screen, aircraft, aliens, bullets, alien_b
 
 def aircraft_hit(ai_settings, stats, screen, aircraft, aliens, bullets):
     """Respond to aircraft being hit by alien."""
-    if ai_settings.aircraft_left > 0:
+    if ai_settings.aircraft_left > 1:
         # Decrement ships_left.
         ai_settings.aircraft_left -= 1
         # Empty the list of aliens and bullets.
@@ -301,6 +301,7 @@ def aircraft_hit(ai_settings, stats, screen, aircraft, aliens, bullets):
         # Pause.
         # sleep(0.5)
     else:
+        ai_settings.aircraft_left -= 1
         stats.game_active = False
         pygame.mouse.set_visible(True)
         # Empty the list of aliens and bullets.
